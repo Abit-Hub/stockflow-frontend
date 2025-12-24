@@ -3,9 +3,10 @@
 
 import { useState, useEffect } from "react";
 import { salesApi } from "@/lib/api";
+import PrintReceiptModal from "@/components/PrintReceiptModal";
 import {
   Search,
-  Filter,
+  Printer,
   Eye,
   X,
   Calendar,
@@ -20,6 +21,8 @@ export default function SalesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSale, setSelectedSale] = useState<any>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showPrintModal, setShowPrintModal] = useState(false);
+  const [printSale, setPrintSale] = useState<any>(null);
 
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
@@ -345,6 +348,20 @@ export default function SalesPage() {
           }}
           formatCurrency={formatCurrency}
           formatDate={formatDate}
+          onPrint={(sale: any) => {
+            setPrintSale(sale);
+            setShowPrintModal(true);
+          }}
+        />
+      )}
+
+      {showPrintModal && printSale && (
+        <PrintReceiptModal
+          sale={printSale}
+          onClose={() => {
+            setShowPrintModal(false);
+            setPrintSale(null);
+          }}
         />
       )}
     </div>
@@ -357,16 +374,14 @@ function SaleDetailsModal({
   onClose,
   formatCurrency,
   formatDate,
+  onPrint,
 }: {
   sale: any;
   onClose: () => void;
   formatCurrency: (amount: number) => string;
   formatDate: (date: string) => string;
+  onPrint: (sale: any) => void;
 }) {
-  const handlePrint = () => {
-    window.print();
-  };
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -521,13 +536,13 @@ function SaleDetailsModal({
               </p>
             </div>
           )}
-
           {/* Actions */}
           <div className="flex gap-3 pt-4">
             <button
-              onClick={handlePrint}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              onClick={() => onPrint(sale)}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
+              <Printer className="h-5 w-5" />
               Print Receipt
             </button>
             <button

@@ -66,6 +66,14 @@ export const productsApi = {
   },
 
   /**
+ * Search product by barcode
+ */
+  searchByBarcode: async (barcode: string): Promise<{ success: boolean; data: { product: Product } }> => {
+    const { data } = await apiClient.get(`/products/barcode/${barcode}`);
+    return data;
+  },
+
+  /**
    * Update product
    */
   update: async (

@@ -4,6 +4,8 @@
 import { useState, useEffect } from "react";
 import { productsApi, categoriesApi, salesApi } from "@/lib/api";
 import { Product } from "@/types";
+import BarcodeScanner from "@/components/BarcodeScanner";
+import PrintReceiptModal from "@/components/PrintReceiptModal";
 import {
   Search,
   Plus,
@@ -11,7 +13,8 @@ import {
   Trash2,
   ShoppingCart,
   CheckCircle,
-  X,
+  Scan,
+  Printer,
 } from "lucide-react";
 
 interface CartItem {
@@ -27,6 +30,8 @@ export default function POSPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
+  const [showPrintModal, setShowPrintModal] = useState(false);
 
   // Checkout form
   const [discount, setDiscount] = useState(0);
@@ -90,6 +95,17 @@ export default function POSPage() {
     } else {
       // Add new item
       setCart([...cart, { product, quantity: 1 }]);
+    }
+  };
+
+  const handleBarcodeScan = async (barcode: string) => {
+    setShowBarcodeScanner(false);
+
+    try {
+      const response = await productsApi.searchByBarcode(barcode);
+      addToCart(response.data.product);
+    } catch (error) {
+      alert("Product not found");
     }
   };
 
@@ -220,15 +236,36 @@ export default function POSPage() {
                   Profit: {formatCurrency(Number(lastSale.totalProfit))}
                 </p>
               </div>
-              <button
-                onClick={() => setShowSuccess(false)}
-                className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                New Sale
-              </button>
+
+              <div className="space-y-3">
+                <button
+                  onClick={() => {
+                    setShowSuccess(false);
+                    setShowPrintModal(true);
+                  }}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  <Printer className="h-5 w-5" />
+                  Print Receipt
+                </button>
+                <button
+                  onClick={() => setShowSuccess(false)}
+                  className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                >
+                  New Sale
+                </button>
+              </div>
             </div>
           </div>
         </div>
+      )}
+
+      {/* Print Receipt Modal */}
+      {showPrintModal && lastSale && (
+        <PrintReceiptModal
+          sale={lastSale}
+          onClose={() => setShowPrintModal(false)}
+        />
       )}
 
       <div className="flex gap-6 h-full">
@@ -241,7 +278,7 @@ export default function POSPage() {
             </p>
           </div>
 
-          {/* Search and Filter */}
+          {/* Search, Barcode and Filter */}
           <div className="mb-4 space-y-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -253,6 +290,14 @@ export default function POSPage() {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
+
+            <button
+              onClick={() => setShowBarcodeScanner(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              <Scan className="h-5 w-5" />
+              Scan Barcode
+            </button>
 
             <div className="flex gap-2 flex-wrap">
               <button
@@ -518,6 +563,14 @@ export default function POSPage() {
           )}
         </div>
       </div>
+
+      {/* Barcode Scanner */}
+      {showBarcodeScanner && (
+        <BarcodeScanner
+          onScan={handleBarcodeScan}
+          onClose={() => setShowBarcodeScanner(false)}
+        />
+      )}
     </div>
   );
 }
