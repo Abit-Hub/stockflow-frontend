@@ -1,0 +1,11 @@
+## Netlify build settings for this Next.js app
+## This tells Netlify to run pnpm build in the repository root and publish the
+## generated `.next` folder. If your app lives in a subfolder, set `base` to
+## that folder and update `publish` accordingly (e.g. "frontend/.next").
+
+[build]
+  command = "pnpm build"
+  publish = ".next"
+
+# Optional: set an edge function directory or other settings here if needed
+# For monorepos: set `base = "path/to/frontend"` under [build]
