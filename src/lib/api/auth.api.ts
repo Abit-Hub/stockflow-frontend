@@ -19,14 +19,14 @@ export const authApi = {
    */
   register: async (
     email: string,
-    password: string,
     name: string,
+    password: string,
     role: 'OWNER' | 'MANAGER' | 'TECHNICIAN'
   ): Promise<AuthResponse> => {
     const { data } = await apiClient.post<AuthResponse>('/auth/register', {
       email,
-      password,
       name,
+      password,
       role
     });
     return data;
