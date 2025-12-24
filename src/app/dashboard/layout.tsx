@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
 import {
@@ -11,6 +11,7 @@ import {
   BarChart3,
   LogOut,
   Store,
+  PackageOpen,
 } from "lucide-react";
 
 export default function DashboardLayout({
@@ -20,6 +21,7 @@ export default function DashboardLayout({
 }) {
   const { user, isLoading, isAuthenticated, logout } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -47,6 +49,20 @@ export default function DashboardLayout({
     router.push("/login");
   };
 
+  const navItems = [
+    { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/dashboard/pos", icon: ShoppingCart, label: "POS" },
+    { href: "/dashboard/products", icon: Package, label: "Products" },
+    { href: "/dashboard/sales", icon: BarChart3, label: "Sales" },
+  ];
+
+  const isActive = (href: string) => {
+    if (href === "/dashboard") {
+      return pathname === "/dashboard";
+    }
+    return pathname.startsWith(href);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar */}
@@ -69,37 +85,25 @@ export default function DashboardLayout({
 
           {/* Navigation */}
           <nav className="flex-1 px-4 py-4 space-y-1">
-            <Link
-              href="/dashboard"
-              className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100"
-            >
-              <LayoutDashboard className="h-5 w-5" />
-              Dashboard
-            </Link>
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.href);
 
-            <Link
-              href="/dashboard/pos"
-              className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100"
-            >
-              <ShoppingCart className="h-5 w-5" />
-              POS
-            </Link>
-
-            <Link
-              href="/dashboard/products"
-              className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100"
-            >
-              <Package className="h-5 w-5" />
-              Products
-            </Link>
-
-            <Link
-              href="/dashboard/sales"
-              className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100"
-            >
-              <BarChart3 className="h-5 w-5" />
-              Sales
-            </Link>
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                    active
+                      ? "bg-blue-50 text-blue-700"
+                      : "text-gray-700 hover:bg-gray-100"
+                  }`}
+                >
+                  <Icon className="h-5 w-5" />
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Logout */}
