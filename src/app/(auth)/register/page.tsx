@@ -43,8 +43,8 @@ export default function RegisterPage() {
     try {
       // Register then auto-login
       await register(
-        formData.email,
         formData.name,
+        formData.email,
         formData.password,
         formData.role as User["role"]
       );

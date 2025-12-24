@@ -69,8 +69,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const register = async (
-    email: string,
     name: string,
+    email: string,
     password: string,
     role: User["role"]
   ) => {
