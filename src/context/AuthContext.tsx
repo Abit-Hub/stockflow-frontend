@@ -74,7 +74,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     password: string,
     role: User["role"]
   ) => {
-    const response = await authApi.register(name, email, password, role);
+    // authApi.register expects (email, name, password, role) so map
+    // the values accordingly when calling the lower-level API.
+    const response = await authApi.register(email, name, password, role);
 
     // Store tokens in cookies
     Cookies.set("token", response.data.token, { expires: 7 });
