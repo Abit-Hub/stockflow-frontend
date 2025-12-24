@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import { Store } from "lucide-react";
+import { User } from "@/types";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -18,7 +19,7 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const { login } = useAuth();
+  const { register } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,7 +42,12 @@ export default function RegisterPage() {
 
     try {
       // Register then auto-login
-      await login(formData.email, formData.password);
+      await register(
+        formData.name,
+        formData.email,
+        formData.password,
+        formData.role as User["role"]
+      );
       router.push("/dashboard");
     } catch (err: any) {
       setError(err.response?.data?.message || "Registration failed");

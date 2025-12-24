@@ -16,6 +16,12 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
+  register: (
+    name: string,
+    email: string,
+    password: string,
+    role: User["role"]
+  ) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -62,6 +68,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(response.data.user);
   };
 
+  const register = async (
+    name: string,
+    email: string,
+    password: string,
+    role: User["role"]
+  ) => {
+    const response = await authApi.register(name, email, password, role);
+
+    // Store tokens in cookies
+    Cookies.set("token", response.data.token, { expires: 7 });
+    Cookies.set("refreshToken", response.data.refreshToken, { expires: 7 });
+
+    // Set user state
+    setUser(response.data.user);
+  };
+
   const logout = async () => {
     const refreshToken = Cookies.get("refreshToken");
 
@@ -93,6 +115,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     isLoading,
     isAuthenticated: !!user,
     login,
+    register,
     logout,
     refreshUser,
   };
