@@ -12,6 +12,7 @@ import {
   LogOut,
   Store,
   PackageOpen,
+  Folder,
 } from "lucide-react";
 
 export default function DashboardLayout({
@@ -53,7 +54,9 @@ export default function DashboardLayout({
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/dashboard/pos", icon: ShoppingCart, label: "POS" },
     { href: "/dashboard/products", icon: Package, label: "Products" },
+    { href: "/dashboard/categories", icon: Folder, label: "Categories" },
     { href: "/dashboard/sales", icon: BarChart3, label: "Sales" },
+    { href: "/dashboard/stock", icon: PackageOpen, label: "Stock Logs" },
   ];
 
   const isActive = (href: string) => {
